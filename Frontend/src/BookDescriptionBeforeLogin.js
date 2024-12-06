@@ -9,6 +9,9 @@ import './BookDescription.css';
 import logo from './images/logo.svg';
 import homeicon from './images/homeicon.png';
 
+const BACKEND_URL = "https://flipthepage.onrender.com";
+// const BACKEND_URL = "http://localhost:5000";
+
 export default function BookDescriptionBeforeLogin() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -24,7 +27,7 @@ export default function BookDescriptionBeforeLogin() {
   const fetchBookDetails = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`http://localhost:5000/book/${id}`);
+      const response = await axios.get(`${BACKEND_URL}/book/${id}`);
 
       if (response.data && response.data.code === 200) {
         setBook(response.data.book);
@@ -56,19 +59,19 @@ export default function BookDescriptionBeforeLogin() {
       {!showReader ? (
         <>
           <header className="book-description-head">
-      <div className="flip-the-page">
-            <img src={logo} alt="Logo" className="logo" />
-          </div>
-          <div className="nav-icons">
-            <Link to="/reader" onClick={() => handleHomeClick("home")}>
-              <img
-                src={homeicon}
-                alt="Home"
-                className={`homeicon ${activeicon === "home" ? "" : ""}`}
-              />
-            </Link>
-          </div>
-      </header>
+            <div className="flip-the-page">
+              <img src={logo} alt="Logo" className="logo" />
+            </div>
+            <div className="nav-icons">
+              <Link to="/home" onClick={() => handleHomeClick("home")}>
+                <img
+                  src={homeicon}
+                  alt="Home"
+                  className={`homeicon ${activeicon === "home" ? "" : ""}`}
+                />
+              </Link>
+            </div>
+          </header>
 
           <main className="main-content">
             <div className="book-details">

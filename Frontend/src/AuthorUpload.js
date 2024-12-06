@@ -1,5 +1,5 @@
-import React, { useState,useEffect } from 'react';
-import { Link,useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import logo from "./images/logo.png";
 import homeicon from "./images/homeicon.png";
 import wishlisticon from "./images/wishlisticon.png";
@@ -8,33 +8,31 @@ import removeIcon from './images/removeicon.png';
 import "./AuthorUpload.css";
 import axios from 'axios';
 
+const BACKEND_URL = "https://flipthepage.onrender.com";
+// const BACKEND_URL = "http://localhost:5000";
+
 function AuthorUpload() {
   const [activeIcon, setActiveicon] = useState("profile");
   const storedUsername = localStorage.getItem('USERNAME');
   const [books, setBooks] = useState([]);
 
-  const navigate=useNavigate();
+  const navigate = useNavigate();
 
-  useEffect(()=>{
-    axios.get(`http://localhost:5000/readHistory/${storedUsername}`)
-    .then(response => {
-      if(response.data.code===200){
-        setBooks(response.data.history);
-      }
-    })
+  useEffect(() => {
+    axios.get(`${BACKEND_URL}/getAuthorUploads/${storedUsername}`)
+      .then(response => {
+        if (response.data.code === 900) {
+          setBooks(response.data.books);
+        }
+      })
   })
 
   const handleIconClick = (icon) => {
     setActiveicon(icon);
   };
 
-  const handleRemove = (book) => {
-    axios.post(`http://localhost:5000/rmHistory`,book)
-    setBooks(books.filter(book => book !== book));
-  };
-
   const handleViewClick = (book) => {
-    navigate(`/book/${book.bookId}`);
+    navigate(`/book/${book._id}`);
   }
   return (
     <div className="author-profile-container">
@@ -74,49 +72,29 @@ function AuthorUpload() {
           <Link to="/author-upload">My Uploads</Link>
         </div>
         <div className="text-3">
-          <Link to="/reading-history">Reading History</Link>
+          <Link to="/author-reading">Reading History</Link>
         </div>
       </nav>
 
       <div className="author-upload-container">
         <main>
-          <h1 className="author-upload-title"></h1>
-          <div className="author-upload">
+          <h1 className="reader-history-title"></h1>
+          <div className="reader-history">
             {books.length > 0 ? (
               books.map((book) => (
-                <div key={book._id} className="author-upload-item">
-                  <img
-                    src={book.coverImage}
-                    alt={book.bookTitle}
-                    className="book-cover"
-                  />
-                  <div className="author-upload-details">
-                    <h2 className="author-upload-book-title">
-                      {book.bookTitle}
-                    </h2>
-                    <p className="author-upload-book-author">{book.author}</p>
-                    {/* <p className="book-price">{book.price}</p>
-                                    <p className="book-rating">⭐ {book.rating}</p> */}
-                    <button
-                      to={`/reading/${book.id}`}
-                      onClick={() => handleViewClick(book)}
-                      className="reader-history-read-btn"
-                    >
+                <div key={book._id} className="reader-history-item">
+                  <img src={book.coverImage} alt={book.bookTitle} className="book-cover" />
+                  <div className="reader-history-details">
+                    <h2 className="reader-history-book-title">{book.title}</h2>
+                    <p className="reader-history-book-author">{book.author}</p>
+                    <button to={`/reading/${book._id}`} onClick={() => handleViewClick(book)} className="reader-history-read-btn">
                       View
                     </button>
                   </div>
-                  <button
-                    className="author-upload-remove-btn"
-                    onClick={() => handleRemove(book)}
-                  >
-                    <img src={removeIcon} alt="Remove" />
-                  </button>
                 </div>
               ))
             ) : (
-              <p className="author-upload-empty-message">
-                You have not uploaded any books yet.
-              </p>
+              <p className="reader-history-empty-message">You have not uploaded any books yet.</p>
             )}
           </div>
         </main>
